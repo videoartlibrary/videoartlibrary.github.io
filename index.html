@@ -10,11 +10,16 @@
 
 :root {
   --paper: #2E2E2E; --panel: #262626; --field: #262626; --frame: #262626; --ink: #CCCCCC; --soft: #9A9A9A; --faint: #858585;
-  --rule: #444444; --hover: #353535; --accent: #61D6D6; --accent-soft: #3A3A3A; --over: #E74856;
+  --rule: #444444; --hover: #353535; --accent: #C9955B; --accent-soft: #3A3A3A; --over: #E74856;
   --sel: #454545; --sel-ink: #F2F2F2;
   --sans: system-ui, "Segoe UI", -apple-system, sans-serif;
   --mono: "Cascadia Mono", "Cascadia Code", ui-monospace, "SF Mono", Consolas, monospace;
-  --fs: 12px; --fs-s: 10px;      /* body text; the small voice (labels, numerals, captions, table heads) */
+  /* THE TYPE SYSTEM (2026-11-23): four sizes, two weights (400, 600), each size one job. Nothing else sets a size.
+       --fs-s  10px mono     the small voice: labels, counts, numbers, keys, table heads
+       --fs    11px          everything scanned or acted on: rows, rail, tray, buttons, fields, facts
+       --fs-r  13px / 1.55   running text read through: descriptions, bios, notes
+       --fs-d  20px          the one title of the viewer and the review desk */
+  --fs: 11px; --fs-s: 10px; --fs-r: 13px; --fs-d: 20px;
   color-scheme: dark;
 }
 :root[data-theme="light"] {
@@ -83,8 +88,8 @@ tr.row:hover td { background: var(--hover); } tr.row.in td { background: var(--a
 .wrap { display: grid; grid-template-columns: 232px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; height: 100vh; }
 .rail { grid-column: 1; grid-row: 1; border-right: 1px solid var(--rule); padding: 28px 20px; overflow: auto; overflow-x: hidden; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; align-content: start; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
 .cat { grid-column: 2; grid-row: 1; padding: 28px 32px 40px; overflow: auto; min-width: 0; container-type: inline-size; }
-.rail header h1 { display: inline-block; font: 600 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--paper); background: var(--ink); padding: 6px 8px; }
-.rail header p { font-size: 10px; line-height: 1.4; color: var(--soft); margin: 6px 0 0; }
+.rail header h1 { display: inline-block; font: 600 var(--fs)/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--paper); background: var(--ink); padding: 6px 8px; }
+.rail header p { font-size: var(--fs-s); line-height: 1.4; color: var(--soft); margin: 6px 0 0; }
 .filters { display: grid; gap: 8px; }
 .filters input[type=search] { width: 100%; padding: 7px 10px; border: 1px solid var(--rule); background: var(--field); border-radius: 3px; outline: none; }
 .filters input[type=search]:focus { border-color: var(--soft); }
@@ -92,9 +97,9 @@ tr.row:hover td { background: var(--hover); } tr.row.in td { background: var(--a
 .filters .linkish { justify-self: start; text-align: left; }
 .stale { display: block; text-align: left; color: var(--over); line-height: 1.4; }
 .views { display: grid; gap: 2px; } .views:empty { display: none; }
-.views .chip { display: flex; justify-content: space-between; align-items: baseline; width: 100%; border: 0; border-radius: 3px; padding: 6px 8px; font-size: 13px; background: none; color: var(--ink); cursor: pointer; }
+.views .chip { display: flex; justify-content: space-between; align-items: baseline; width: 100%; border: 0; border-radius: 3px; padding: 6px 8px; font-size: var(--fs); background: none; color: var(--ink); cursor: pointer; }
 .views .chip:hover { background: var(--hover); }
-.views .chip .n { font: 10px var(--mono); opacity: .7; color: inherit; margin: 0; }
+.views .chip .n { font: var(--fs-s) var(--mono); opacity: .7; color: inherit; margin: 0; }
 .views .chip.on { background: var(--sel); color: var(--sel-ink); font-weight: 500; }
 /* tag groups: a heading per group that folds, then one row per tag with its count; counts follow the current filters */
 .facets { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
@@ -127,6 +132,10 @@ tr.row:hover td { background: var(--hover); } tr.row.in td { background: var(--a
 .cathead .count { margin: 0; } .cathead label { font-size: var(--fs); color: var(--soft); display: inline-flex; gap: 8px; align-items: center; }
 .cathead select { padding: 4px 6px; }
 th.num, td.num { text-align: right; }
+/* click a column's head to sort by it, again to reverse (2026-11-23, Brandon: "click column headers to sort"); the Sort menu
+   takes over when it is used. A column sorts by its own value, or by CONFIG column.sort (the Length column: seconds). */
+th.sorts { cursor: pointer; user-select: none; } th.sorts:hover { color: var(--ink); }
+th.sorts.on { color: var(--accent); } th.sorts .arr { font-size: var(--fs-s); margin-left: 4px; }
 td { vertical-align: middle; } tr.detail > td, .kids td { vertical-align: top; }
 td.mono, td.num { font-family: var(--mono); font-size: var(--fs-s); white-space: nowrap; }
 td.soft { color: var(--soft); }
@@ -135,9 +144,9 @@ th.len, td.len { text-align: right; } td.len { font-family: var(--mono); font-si
 th.len { padding-right: 18px; }
 td.name { font-weight: 500; }
 .rtags { display: flex; flex-wrap: wrap; gap: 3px; }
-.rtags span { font-size: 10.5px; color: var(--soft); border: 1px solid var(--rule); border-radius: 2px; padding: 0 4px; }
-.flag { display: inline-block; font-size: 10.5px; letter-spacing: .04em; color: var(--accent); border: 1px solid var(--accent); border-radius: 2px; padding: 0 4px; margin-left: 6px; vertical-align: 1px; font-weight: 400; }
-tr.detail td { background: var(--panel); font-size: 13px; padding: 18px 20px 22px; }
+.rtags span { font-size: var(--fs-s); color: var(--soft); border: 1px solid var(--rule); border-radius: 2px; padding: 0 4px; }
+.flag { display: inline-block; font-size: var(--fs-s); letter-spacing: .04em; color: var(--accent); border: 1px solid var(--accent); border-radius: 2px; padding: 0 4px; margin-left: 6px; vertical-align: 1px; font-weight: 400; }
+tr.detail td { background: var(--panel); font-size: var(--fs); padding: 18px 20px 22px; }
 /* Card pages (CONFIG.card; 2026-11-18, Brandon: "what if the card got a little space between it instead? I find the orange
    lines distracting ... when you click on an entry, the distance between the card and the lines above and below increase
    again slightly"). The open row and its card are one block on the card's ground, set apart by space, not lines: a gap row
@@ -151,13 +160,13 @@ body.cards tr.gap.in > td { animation: gapIn .24s ease-out; }
 @keyframes gapIn { from { padding: 0; } }
 .dt { display: grid; grid-template-columns: minmax(0, 64ch) minmax(240px, 1fr); gap: 0 32px; }
 @container (max-width: 860px) { .dt { grid-template-columns: 1fr; gap: 16px; } }
-.dt-desc { color: var(--ink); font-size: 13px; line-height: 1.6; margin: 0 0 12px; }
+.dt-desc { color: var(--ink); font-size: var(--fs-r); line-height: 1.55; margin: 0 0 12px; }
 .dt-note { color: var(--soft); font-size: var(--fs); margin: 0 0 10px; }
 .dt-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--fs); margin-bottom: 10px; }
 .dt-links a, .kids a { color: var(--accent); text-decoration: none; }
 .dt-links a:hover, .kids a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dt-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.dt-tags .chip { font-size: 10.5px; padding: 0 4px; background: none; color: var(--soft); }
+.dt-tags .chip { font-size: var(--fs-s); padding: 0 4px; background: none; color: var(--soft); }
 .dt-tags .chip.on { background: var(--sel); color: var(--sel-ink); }
 .kids { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .kids li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--rule); }
@@ -180,7 +189,7 @@ td.dec { white-space: nowrap; }
 .decbtn.later.on { border-color: var(--accent); color: var(--accent); }
 /* the tray: the selection along the bottom. Left, its name and count; middle, the picks in order; right, Save. */
 body.browse #tray { display: none; }
-.vw-artist { font-size: 15px; color: var(--soft, inherit); margin: 0 0 4px; }      /* the viewer: the artist above the title (2026-11-23) */       /* CONFIG.browseOnly: nothing is picked or saved (2026-11-23) */
+.vw-artist { font-size: var(--fs-r); color: var(--soft, inherit); margin: 0 0 4px; }      /* the viewer: the artist above the title (2026-11-23) */       /* CONFIG.browseOnly: nothing is picked or saved (2026-11-23) */
 .sel { grid-column: 1 / -1; grid-row: 2; position: relative; border-top: 1px solid var(--rule); background: var(--panel); padding: 12px 32px 14px 20px; display: grid; grid-template-columns: 212px minmax(0, 1fr) auto; gap: 24px; align-items: start; }
 .t-lec { display: grid; gap: 5px; min-width: 0; padding-top: 4px; }
 .t-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
@@ -188,21 +197,21 @@ body.browse #tray { display: none; }
 .sel .sum { font: var(--fs-s)/1.4 var(--mono); color: var(--soft); margin: 0; text-align: right; }
 .selname { display: grid; gap: 4px; } .selname[hidden], .selopen[hidden] { display: none; }
 .selname .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.selname input { width: 100%; font-size: 11px; padding: 3px 6px; border-radius: 2px; }
+.selname input { width: 100%; font-size: var(--fs); padding: 3px 6px; border-radius: 2px; }
 .selname input[type=date] { width: auto; justify-self: start; font: var(--fs-s) var(--mono); padding: 2px 6px; }
-.selopen { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .selopen select { max-width: 100%; font-size: 11px; padding: 2px 4px; } .selopen .linkish { font-size: 11px; }
+.selopen { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .selopen select { max-width: 100%; font-size: var(--fs); padding: 2px 4px; } .selopen .linkish { font-size: var(--fs); }
 .sel ol { list-style: none; margin: 0; padding: 4px 0; display: flex; gap: 10px; overflow-x: auto; min-width: 0; align-items: flex-start; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
-.sel li { flex: none; width: 128px; position: relative; font-size: 12px; line-height: 1.35; }
-.sel li.empty { width: auto; color: var(--faint); font-size: 12.5px; padding: 0; }
+.sel li { flex: none; width: 128px; position: relative; font-size: var(--fs); line-height: 1.4; }
+.sel li.empty { width: auto; color: var(--faint); font-size: var(--fs); padding: 0; }
 .sel li .go { display: block; cursor: pointer; min-width: 0; }
 .sel li .sthumb { display: block; width: 128px; height: 72px; object-fit: contain; background: var(--paper); border-radius: 2px; margin-bottom: 4px; }
 .sel li .stxt { display: block; min-width: 0; }
 .sel li .stxt .t, .sel li .stxt .a { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sel li .a { color: var(--soft); font-size: 11.5px; } .sel li .a.m { font: var(--fs-s)/1.5 var(--mono); }
+.sel li .a { color: var(--soft); font-size: var(--fs); } .sel li .a.m { font: var(--fs-s)/1.5 var(--mono); }
 .sel li .go:hover .t { text-decoration: underline; text-underline-offset: 3px; }
 .sel li .lihead { position: absolute; top: 4px; left: 4px; right: 4px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
 .sel li .lihead > * { pointer-events: auto; }
-.sel li .num { font: 10.5px/16px var(--mono); background: var(--paper); color: var(--ink); padding: 0 5px; border-radius: 2px; }
+.sel li .num { font: var(--fs-s)/16px var(--mono); background: var(--paper); color: var(--ink); padding: 0 5px; border-radius: 2px; }
 .sel li button { width: 18px; height: 16px; padding: 0; line-height: 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper); color: var(--soft); cursor: pointer; opacity: .85; margin-left: auto; }
 .sel li button:hover { color: var(--over); border-color: var(--over); opacity: 1; }
 /* a pick with no picture, and the Desk's decision log: a text card with a hairline at its left */
@@ -211,7 +220,8 @@ body.browse #tray { display: none; }
 .sel li.empty { display: block; border-left: 0; padding-left: 0; }
 .sel li[draggable] { cursor: grab; } .sel li[draggable]:active { cursor: grabbing; }
 .sel li.dragging { opacity: .35; } .sel li.drop-before { box-shadow: -6px 0 0 -4px var(--accent); } .sel li.drop-after { box-shadow: 6px 0 0 -4px var(--accent); }
-.sel .actions { display: grid; justify-items: end; gap: 8px; }
+.sel .actions { display: grid; justify-items: end; align-content: start; gap: 6px; }
+@media (min-width: 981px) { .sel { height: var(--tray-fixed, 168px); overflow: hidden; } }   /* one height in every mode (2026-11-23) */
 .sel .actions label { font-size: var(--fs); color: var(--soft); display: inline-flex; gap: 6px; align-items: center; }
 .sel .actions button { border: 0; background: transparent; padding: 0; color: var(--accent); cursor: pointer; font-size: var(--fs); }
 .sel .actions button:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -230,6 +240,17 @@ body.browse #tray { display: none; }
 .sel .actions .tprog label { font: var(--fs-s)/1.5 var(--mono); gap: 4px; }
 .tprog input[type=text] { width: 54px; font: var(--fs-s) var(--mono); padding: 1px 4px; border-radius: 2px; }
 .tprog .pg-done { color: var(--ink); white-space: normal; } .tprog .pg-done.err { color: var(--over); }
+/* Lecture | Program (2026-11-23, Brandon: "the options on the right side, including them all at once is awkward. give me a
+   slider to select lecture or program. each has its own build options"): one set of actions at a time */
+.tmode { display: inline-flex; border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; } .tmode[hidden] { display: none; }
+.sel .actions .tmode button { padding: 2px 10px; border-radius: 0; color: var(--soft); font: var(--fs-s)/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.sel .actions .tmode button:hover { text-decoration: none; color: var(--ink); }
+.sel .actions .tmode button.on { background: var(--accent); color: var(--paper); }
+body.tm-program #save, body.tm-program #deckbtn, body.tm-program #pnbtn { display: none !important; }
+/* the rail's hides in one run, each with its key; the viewer's button on its own above the table (2026-11-23) */
+.hides { display: grid; gap: 2px; } .hides kbd, .cathead kbd { font: var(--fs-s) var(--mono); color: var(--faint); margin-left: 6px; }
+.cathead #vwopen { margin-left: auto; font-size: var(--fs); }
+#sub:empty { display: none; }       /* a page with no subtitle shows none (the Lecture Library, 2026-11-23) */
 /* the page note and the how-to: a box that opens above the tray's right end */
 .pop { position: absolute; right: 32px; bottom: calc(100% + 8px); width: 344px; max-width: calc(100vw - 40px); z-index: 20; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 12px; display: grid; gap: 8px; }
 .pop[hidden] { display: none; }
@@ -239,24 +260,24 @@ body.browse #tray { display: none; }
 /* review desk (mockup C): one work at a time, W / P / L decide and move on, J / K step. Served sources only. */
 .rd { position: fixed; inset: 0; z-index: 15; background: var(--paper); display: grid; grid-template-rows: auto 1fr auto; }
 .rd[hidden] { display: none; }
-.rd-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 32px; border-bottom: 1px solid var(--rule); font-size: 13px; }
-.rd-top b { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+.rd-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 32px; border-bottom: 1px solid var(--rule); font-size: var(--fs); }
+.rd-top b { font-size: var(--fs); letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
 .rd-body { overflow: auto; padding: 36px 32px; }
 .rd-in { max-width: 72ch; margin: 0 auto; display: grid; gap: 12px; }
-.rd-name { font-size: 15px; color: var(--soft); }
-.rd-title { font-size: 26px; line-height: 1.2; font-weight: 500; margin: 0; }
-.rd-meta { font: 12.5px var(--mono); color: var(--soft); }
-.rd-state { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
-.rd .dt-desc { font-size: 14px; }
+.rd-name { font-size: var(--fs-r); color: var(--soft); }
+.rd-title { font-size: var(--fs-d); line-height: 1.25; font-weight: 500; margin: 0; }
+.rd-meta { font: var(--fs) var(--mono); color: var(--soft); }
+.rd-state { font-size: var(--fs-s); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.rd .dt-desc { font-size: var(--fs-r); }
 .rd .kids li { grid-template-columns: 1fr auto; }
 .rd-foot { border-top: 1px solid var(--rule); padding: 14px 32px; display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; background: var(--panel); }
-.rd-nav { font: 12.5px var(--mono); color: var(--soft); display: flex; gap: 14px; align-items: center; }
+.rd-nav { font: var(--fs) var(--mono); color: var(--soft); display: flex; gap: 14px; align-items: center; }
 .rd-nav button, .rd-acts button { border: 1px solid var(--rule); background: transparent; border-radius: 3px; padding: 5px 12px; cursor: pointer; }
 .rd-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .rd-acts button.on.want { background: var(--accent); border-color: var(--accent); color: var(--paper); }
 .rd-acts button.on.pass { background: var(--faint); border-color: var(--faint); color: var(--paper); }
 .rd-acts button.on.later { border-color: var(--accent); color: var(--accent); }
-.rd-acts kbd, .rd-nav kbd { font: 11px var(--mono); color: var(--faint); margin-left: 4px; }
+.rd-acts kbd, .rd-nav kbd { font: var(--fs-s) var(--mono); color: var(--faint); margin-left: 4px; }
 .rd-why { width: 100%; padding: 6px 9px; border: 1px solid var(--rule); border-radius: 3px; background: var(--field); }
 @media (max-width: 760px) { .rd-foot { grid-template-columns: 1fr; } }
 /* inside the Desk: its back bar names the page, so the page's own title goes; the tray becomes the decision log */
@@ -269,41 +290,41 @@ body.rdon { overflow: hidden; }   /* the list does not scroll behind the review 
 .vw-body { display: grid; grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr); gap: 36px; padding: 28px 32px; min-height: 0; }
 .vw-pic { display: flex; align-items: center; justify-content: center; min-height: 0; background: #000; border-radius: 2px; outline: 3px solid transparent; outline-offset: 5px; }
 .vw-pic img { width: 100%; height: 100%; object-fit: contain; display: block; }   /* fills the frame, smaller stills scaled up */
-.vw-pic .none { color: var(--faint); font: 12px var(--mono); }
+.vw-pic .none { color: var(--faint); font: var(--fs) var(--mono); }
 .vw.on .vw-pic { outline-color: var(--accent); }
 .vw-text { overflow: auto; min-height: 0; display: grid; align-content: start; gap: 14px; padding-right: 8px; }
-.vw-name { font-size: 24px; line-height: 1.25; font-weight: 500; margin: 0; }
-.vw-state { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); min-height: 1.3em; }
-.vw-meta { font: 12.5px/1.7 var(--mono); color: var(--soft); }
+.vw-name { font-size: var(--fs-d); line-height: 1.25; font-weight: 500; margin: 0; }
+.vw-state { font-size: var(--fs-s); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); min-height: 1.3em; }
+.vw-meta { font: var(--fs)/1.7 var(--mono); color: var(--soft); }
 .vw-meta b { font-weight: 400; color: var(--faint); margin-right: 8px; }
-.vw-desc { font-size: 15px; line-height: 1.6; margin: 0; white-space: pre-line; max-width: 64ch; }
-.vw-foot { border-top: 1px solid var(--rule); padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--panel); font: 12.5px var(--mono); color: var(--soft); }
+.vw-desc { font-size: var(--fs-r); line-height: 1.55; margin: 0; white-space: pre-line; max-width: 64ch; }
+.vw-foot { border-top: 1px solid var(--rule); padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--panel); font: var(--fs) var(--mono); color: var(--soft); }
 .vw-foot button { border: 1px solid var(--rule); background: transparent; color: inherit; border-radius: 3px; padding: 5px 12px; cursor: pointer; font: inherit; }
 .vw-foot .vw-pick { min-width: 15em; }
 .vw-foot .vw-pick.on { background: var(--accent); border-color: var(--accent); color: var(--paper); }
-.vw kbd { font: 11px var(--mono); color: var(--faint); margin-left: 4px; }
+.vw kbd { font: var(--fs-s) var(--mono); color: var(--faint); margin-left: 4px; }
 .vw-foot .vw-pick.on kbd { color: inherit; }
 @media (max-width: 760px) { .vw-body { grid-template-columns: 1fr; grid-template-rows: 42vh auto; overflow: auto; padding: 16px; } .vw-text { overflow: visible; } .vw-foot { padding: 12px 16px; } }
 body.framed .cat, body.framed .rail { padding-top: 16px; }
-.dl { display: inline-block; width: 17px; text-align: center; font: 11px/16px var(--mono); border: 1px solid var(--rule); border-radius: 2px; color: var(--soft); }
+.dl { display: inline-block; width: 17px; text-align: center; font: var(--fs-s)/16px var(--mono); border: 1px solid var(--rule); border-radius: 2px; color: var(--soft); }
 .dl.want { background: var(--accent); border-color: var(--accent); color: var(--paper); } .dl.pass { background: var(--faint); border-color: var(--faint); color: var(--paper); }
 .dl.later { border-color: var(--accent); color: var(--accent); }
 .dt-stills { display: flex; gap: 6px; margin: 0 0 12px; flex-wrap: wrap; } .dt-stills img { height: 92px; border-radius: 2px; background: var(--rule); }
 td.thumb { width: 74px; padding-top: 3px; padding-bottom: 3px; } td.thumb img { display: block; height: 40px; width: 64px; object-fit: cover; border-radius: 2px; background: var(--rule); }
 .rd-still { width: 100%; max-height: 44vh; object-fit: contain; background: #000; border-radius: 2px; display: block; }
 .related { margin: 0 0 12px; } .related .label { display: block; margin-bottom: 4px; } .related .rel { display: flex; flex-wrap: wrap; gap: 8px; }
-.relbtn { display: flex; gap: 8px; align-items: flex-start; width: 240px; text-align: left; border: 1px solid var(--rule); background: transparent; border-radius: 2px; padding: 4px; cursor: pointer; color: var(--ink); font: inherit; font-size: 12px; line-height: 1.35; }
+.relbtn { display: flex; gap: 8px; align-items: flex-start; width: 240px; text-align: left; border: 1px solid var(--rule); background: transparent; border-radius: 2px; padding: 4px; cursor: pointer; color: var(--ink); font: inherit; font-size: var(--fs); line-height: 1.35; }
 .relbtn:hover { border-color: var(--accent); } .relbtn img { flex: none; width: 72px; height: 48px; object-fit: cover; border-radius: 2px; background: var(--rule); } .relbtn .m { color: var(--soft); }
-.about { margin: 0 0 12px; } .about .label { display: block; margin-bottom: 3px; } .about p { margin: 0; color: var(--soft); font-size: 13px; line-height: 1.55; }
+.about { margin: 0 0 12px; } .about .label { display: block; margin-bottom: 3px; } .about p { margin: 0; color: var(--soft); font-size: var(--fs-r); line-height: 1.55; }
 /* a picture in an opened row, with its tick (use) and x (remove) at the top corners */
 .still { position: relative; display: inline-block; line-height: 0; } .still button { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; padding: 0; line-height: 18px; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper); color: var(--soft); cursor: pointer; opacity: .85; } .still button:hover { opacity: 1; color: var(--over); } .still .use { right: auto; left: 4px; } .still .use:hover { color: var(--accent); } .still.on img { outline: 2px solid var(--accent); outline-offset: -2px; } .still.on .use { opacity: 1; color: var(--accent); border-color: var(--accent); } .dt-stills.choosing .still:not(.on) img { opacity: .45; }
 .still.off img { opacity: .2; } .still.off button { opacity: 1; color: var(--over); border-color: var(--over); }
 .still .scap { display: none; }
 .lb { position: fixed; inset: 0; background: rgba(0,0,0,.93); z-index: 60; display: grid; grid-template-rows: 1fr auto; cursor: zoom-out; } .lb[hidden] { display: none; }
 .lb img { max-width: 96vw; max-height: calc(100vh - 70px); align-self: center; justify-self: center; display: block; cursor: default; }
-.lb .bar { color: #cfcbc2; font-size: 13px; padding: 10px 18px 16px; display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; cursor: default; }
-.lb .bar button { background: none; border: 1px solid #55524c; color: #cfcbc2; border-radius: 3px; padding: 4px 10px; cursor: pointer; font-size: 12.5px; } .lb .bar button:hover, .lb .bar button.on { border-color: var(--accent); color: var(--accent); }
-.lb .bar .pos { font-family: var(--mono); font-size: 12px; color: #8d8a83; }
+.lb .bar { color: #cfcbc2; font-size: var(--fs); padding: 10px 18px 16px; display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; cursor: default; }
+.lb .bar button { background: none; border: 1px solid #55524c; color: #cfcbc2; border-radius: 3px; padding: 4px 10px; cursor: pointer; font-size: var(--fs); } .lb .bar button:hover, .lb .bar button.on { border-color: var(--accent); color: var(--accent); }
+.lb .bar .pos { font-family: var(--mono); font-size: var(--fs-s); color: #8d8a83; }
 .dt-stills.zoom img { cursor: zoom-in; }
 tr.row.seen td.name, tr.row.seen td.soft, tr.row.seen td.mono { color: var(--faint); }
 tr.vband td { color: var(--ink); } tr.vband .vn { font-weight: 400; color: var(--soft); letter-spacing: 0; margin-left: 6px; }
@@ -315,7 +336,7 @@ td.seencell { width: 18px; text-align: center; padding-left: 4px; padding-right:
 .seendot { display: inline-block; width: 7px; height: 7px; padding: 0; margin: 0; border: 1px solid var(--faint); border-radius: 50%; background: transparent; cursor: pointer; vertical-align: middle; }
 .seendot:hover { border-color: var(--accent); } .seendot.on { background: var(--soft); border-color: var(--soft); }
 .dropzone { margin: 12px 0 0; padding: 10px 12px; border: 1px dashed var(--rule); border-radius: 3px; color: var(--soft); font-size: var(--fs); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .dropzone.over { border-color: var(--accent); color: var(--accent); }
-.mynote { margin: 12px 0 0; } .mynote .label { display: block; margin-bottom: 4px; } .mynote textarea { display: block; width: 100%; min-height: 64px; padding: 6px 9px; border: 1px solid var(--rule); border-radius: 3px; background: var(--field); resize: vertical; font-size: 13px; line-height: 1.5; }
+.mynote { margin: 12px 0 0; } .mynote .label { display: block; margin-bottom: 4px; } .mynote textarea { display: block; width: 100%; min-height: 64px; padding: 6px 9px; border: 1px solid var(--rule); border-radius: 3px; background: var(--field); resize: vertical; font-size: var(--fs-r); line-height: 1.5; }
 tr.row.noted td:first-child { box-shadow: inset 2px 0 0 var(--accent); }   /* a note on this row has not been saved out yet */
 /* A row that plays (CONFIG.player, detail.play; added 2026-11-18, the Lecture Library's Video view): frames | facts |
    description from one top line. A click on a frame plays the film where the frames were (2026-11-19). */
@@ -330,21 +351,21 @@ tr.row.noted td:first-child { box-shadow: inset 2px 0 0 var(--accent); }   /* a 
   .dtv > * { grid-column: 1 !important; grid-row: auto !important; margin: 0; } }
 .pfig { position: relative; margin: 0; cursor: pointer; background: #000; border-radius: 2px; overflow: hidden; }
 .pfig img { display: block; width: 100%; height: auto; }
-.pfig figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 7px 4px; font: 10.5px var(--mono); color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.6)); pointer-events: none; }
+.pfig figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 7px 4px; font: var(--fs-s) var(--mono); color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.6)); pointer-events: none; }
 .pfig::after { content: "\25B6"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; background: rgba(0,0,0,.3); opacity: 0; transition: opacity .15s; }
-.pfig:hover::after { opacity: 1; } .pfig.noplay::after { content: "VLC"; font: 600 11px var(--mono); letter-spacing: .06em; }
+.pfig:hover::after { opacity: 1; } .pfig.noplay::after { content: "VLC"; font: 600 var(--fs-s) var(--mono); letter-spacing: .06em; }
 .pframes-sm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .pphotos { margin: 16px 0 0; } .pphotos > .label { display: block; margin-bottom: 6px; }
 .dtv .dt-stills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; flex-wrap: wrap !important; }
 .dtv .dt-stills .still { display: block; } .dtv .dt-stills img { width: 100%; height: auto !important; object-fit: contain; }
 .dt-facts { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 5px 14px; margin: 0 0 16px; }
 .dt-facts dt { font: var(--fs-s)/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); padding-top: 2px; }
-.dt-facts dd { margin: 0; color: var(--ink); font-size: 12.5px; }
-.dt-facts dd.m { font-family: var(--mono); font-size: 12px; } .dt-facts dd.f { font-family: var(--mono); font-size: 11px; color: var(--soft); word-break: break-all; }
+.dt-facts dd { margin: 0; color: var(--ink); font-size: var(--fs); }
+.dt-facts dd.m { font-family: var(--mono); font-size: var(--fs); } .dt-facts dd.f { font-family: var(--mono); font-size: var(--fs-s); color: var(--soft); word-break: break-all; }
 .dt-act { display: flex; gap: 18px; flex-wrap: wrap; }
 .dt-act button { border: 0; background: transparent; padding: 0; color: var(--accent); cursor: pointer; font-size: var(--fs); }
 .dt-act button:hover { text-decoration: underline; text-underline-offset: 3px; }
-.pfig.pnone { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; color: #8d8a83; font-size: 12px; }
+.pfig.pnone { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; color: #8d8a83; font-size: var(--fs); }
 /* The card (CONFIG.card; 2026-11-18, laid out again 2026-11-19): every opened row is the same card. Across its top, one
    strip of what the row shows: the film's frames, then its pictures, each whole at the strip's height with its caption
    (Brandon, 2026-11-19: images whole, not cropped); the strip scrolls sideways. Beneath, three columns of one height
@@ -377,7 +398,7 @@ tr.row.noted td:first-child { box-shadow: inset 2px 0 0 var(--accent); }   /* a 
 .c-desc.open { max-height: none; -webkit-mask-image: none; mask-image: none; }
 .c-more { display: block; margin: 4px 0 0; font: 500 var(--fs-s)/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; } .c-more[hidden] { display: none; }
 .c-desc:not(.open).fits { -webkit-mask-image: none; mask-image: none; }
-.c-none { color: var(--faint); margin: 0; font-size: 13px; }
+.c-none { color: var(--faint); margin: 0; font-size: var(--fs); }
 .c-secs { margin-top: 12px; border-top: 1px solid var(--rule); }
 .c-sec { border-bottom: 1px solid var(--rule); } .c-sec > summary { cursor: pointer; padding: 7px 0; font: 500 var(--fs-s)/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--soft); list-style: none; }
 .c-sec > summary::-webkit-details-marker { display: none; } .c-sec > summary::before { content: "\25B8"; display: inline-block; width: 14px; color: var(--faint); transition: transform .15s; }
@@ -402,7 +423,7 @@ tr.row.noted td:first-child { box-shadow: inset 2px 0 0 var(--accent); }   /* a 
 .pvhead button, .pvact button { border: 0; background: transparent; color: var(--soft); cursor: pointer; font-size: var(--fs); padding: 0 2px; }
 .pvhead button:hover, .pvact button:hover { color: var(--ink); }
 .pv video { height: min(var(--play-h), 52vh); width: auto; aspect-ratio: auto 16 / 9; max-width: 100%; background: #000; display: block; border-radius: 2px; }
-.pvmsg { font-size: var(--fs); color: var(--soft); padding: 8px 0 0; max-width: 60ch; } .pvmsg code { font-family: var(--mono); font-size: 11px; word-break: break-all; color: var(--ink); }
+.pvmsg { font-size: var(--fs); color: var(--soft); padding: 8px 0 0; max-width: 60ch; } .pvmsg code { font-family: var(--mono); font-size: var(--fs-s); word-break: break-all; color: var(--ink); }
 .pvact { display: flex; gap: 14px; margin-top: 6px; }
 .dtv-frames.playing > .pfig, .dtv-frames.playing > .pframes-sm { display: none; } .dtv .pv video { height: auto; width: 100%; }
 /* under 981px: rail, table and tray stack, and the window scrolls */
@@ -449,7 +470,7 @@ tr.row.noted td:first-child { box-shadow: inset 2px 0 0 var(--accent); }   /* a 
       <div class="selopen" id="selopen" hidden><button class="linkish" id="openbtn"></button><select id="opensel" hidden></select><input type="file" id="openfile" accept=".json,application/json" hidden></div>
     </div>
     <ol id="sellist"></ol>
-    <div class="actions"><div class="tprog" id="tprog" hidden></div><label>Line <select id="line"><option value="both">Both</option><option value="teaching">Teaching</option><option value="mats">MATS</option></select></label><button class="primary" id="save">Save selection</button><button id="deckbtn" hidden>Build deck</button><button id="pnbtn" hidden></button><button id="clear">Clear</button></div>
+    <div class="actions"><div class="tmode" id="tmode" hidden><button data-tm="lecture" id="tmlec">Lecture</button><button data-tm="program">Program</button></div><div class="tprog" id="tprog" hidden></div><label>Line <select id="line"><option value="both">Both</option><option value="teaching">Teaching</option><option value="mats">MATS</option></select></label><button class="primary" id="save">Save selection</button><button id="deckbtn" hidden>Build deck</button><button id="pnbtn" hidden></button><button id="clear">Clear</button></div>
     <div class="pop" id="pnpop" hidden>
       <div class="mynote" id="pagenote" hidden><label class="label" for="pnote" id="pnotelabel"></label><textarea id="pnote"></textarea></div>
       <p class="howto" id="howto"></p>
@@ -520,7 +541,11 @@ const ON = new Set(UI.on || []);   // "group|tag"
 const OFF = new Set(UI.off || []);
 let openId = null;
 C.sorts.forEach((s, i) => $("sort").insertAdjacentHTML("beforeend", `<option value="${i}">${esc(s.label)}</option>`));
-$("sort").value = UI.sort || 0; $("q").value = UI.q || ""; $("line").value = UI.line || C.defaultLine || "both"; $("line").addEventListener("input", () => { UI.line = $("line").value; saveUI(); });
+$("sort").insertAdjacentHTML("beforeend", `<option value="hs" id="hsopt" hidden>By column</option>`);
+$("thead").addEventListener("click", e => { const th = e.target.closest("[data-hsort]"); if (!th) return; const k = th.dataset.hsort, h = UI.hsort;
+  // first click: numbers (years, lengths) longest or newest first is rarely wanted first, so every column starts ascending
+  UI.hsort = h && h.k === k ? { k, dir: -h.dir } : { k, dir: 1 }; $("sort").value = "hs"; saveUI(); renderRows(); });
+$("sort").value = UI.hsort ? "hs" : (UI.sort && UI.sort !== "hs" ? UI.sort : 0); $("q").value = UI.q || ""; $("line").value = UI.line || C.defaultLine || "both"; $("line").addEventListener("input", () => { UI.line = $("line").value; saveUI(); });
 // Views (CONFIG.views = {group, options: [{label, values}]}): one table, two or more libraries. The switch shows one
 // view's rows at a time (rows whose tag in the group is among the view's values); the Selection panel is shared, so one
 // running order can hold rows from every view (the Lecture Library: images and texts, or the key's video works).
@@ -544,7 +569,9 @@ if (VIEWS) {
 // A column may belong to some views only (2026-11-19: a Length column under Video, the image count elsewhere):
 // {views: ["Video"]} by the views' labels. While a search holds every view's rows, every column shows.
 const COLS = () => !VIEWS || searching() ? C.columns : C.columns.filter(c => !c.views || c.views.includes(VIEWS[UI.view || 0].label));
-const renderHead = () => { $("thead").innerHTML = `<tr>${COLS().map(c => `<th class="${c.cls || ""}">${esc(c.label)}</th>`).join("")}</tr>`; };
+const sortKey = c => c.sort === false || !c.label || c.key.startsWith("_") ? null : (c.sort || c.key);
+const renderHead = () => { const h = UI.hsort; $("thead").innerHTML = `<tr>${COLS().map(c => { const k = sortKey(c), on = h && k && h.k === k;
+  return `<th class="${c.cls || ""}${k ? " sorts" : ""}${on ? " on" : ""}"${k ? ` data-hsort="${esc(k)}" title="Sort by ${esc(c.label.toLowerCase())}${on ? " (again to reverse)" : ""}"` : ""}>${esc(c.label)}${on ? `<span class="arr">${h.dir < 0 ? "&#9660;" : "&#9650;"}</span>` : ""}</th>`; }).join("")}</tr>`; };
 renderHead();
 // Served by the Desk with works inside each row (UbuWeb: works of an artist), each work is decided W / P / L.
 if (C.hideLine) document.head.insertAdjacentHTML("beforeend", `<style>.actions label:has(#line) { display: none; }</style>`);   // the Desk's line selector, for pages outside the Desk
@@ -628,7 +655,7 @@ function renderFacets() {
   $("facets").className = "facets" + closed; $("facets").innerHTML = h;
 }
 function sorted(list) {
-  const s = C.sorts[+$("sort").value || 0], bandOf = it => C.bands ? Math.max(0, C.bands.indexOf(it.band || "")) : 0;
+  const s = UI.hsort ? { key: UI.hsort.k, dir: UI.hsort.dir } : C.sorts[+$("sort").value || 0], bandOf = it => C.bands ? Math.max(0, C.bands.indexOf(it.band || "")) : 0;
   const sv = searching();      // searching every view: each view's rows together, in the views' order
   return list.slice().sort((a, b) => { if (sv && viewOf(a) !== viewOf(b)) return viewOf(a) - viewOf(b); if (bandOf(a) !== bandOf(b)) return bandOf(a) - bandOf(b); let x = a.cols[s.key], y = b.cols[s.key];
     const nx = x == null || x === "", ny = y == null || y === ""; if (nx !== ny) return nx ? 1 : -1;
@@ -880,7 +907,7 @@ function renderSel() {
     return `<img class="sthumb" draggable="false" loading="lazy" alt="" src="${u ? esc(u) : ""}"${u ? "" : ` style="visibility:hidden"`}>`; };
   $("sellist").innerHTML = entries.length ? entries.map(([id, v], n) => { const it = byId.get(id), d = (it || {}).detail || {}, sub = subOf(id, v);
       const imgs = C.stillPick && it && !d.plainStills && (d.stills || []).length ? `${hasFilm(it) && (!IMUSE[id] || useFilm(it)) ? "film, " : ""}${IMUSE[id] ? useList(it).length + " of " : "all "}${d.stills.length} images` : "";
-      return `<li${C.reorder ? ` draggable="true" data-id="${esc(id)}" title="Drag to change the running order"` : ""}><span class="go" data-go="${esc(v.parent || id)}">${thumbOf(id)}<span class="stxt"><span class="t" title="${esc(v.label)}">${esc(v.label)}</span>${sub ? `<span class="a">${esc(sub)}</span>` : ""}${imgs ? `<span class="a m">${imgs}</span>` : ""}${PG && PG.at[id] != null ? `<span class="a m" title="Starts at, and runs">at ${hmsOf(PG.at[id])} · ${hmsOf(filmSec(it))}</span>` : ""}</span></span><span class="lihead">${C.reorder ? `<span class="num">${n + 1}</span>` : "<span></span>"}<button data-rm="${esc(id)}" title="Remove">&times;</button></span></li>`; }).join("")
+      return `<li${C.reorder ? ` draggable="true" data-id="${esc(id)}" title="Drag to change the running order"` : ""}><span class="go" data-go="${esc(v.parent || id)}">${thumbOf(id)}<span class="stxt"><span class="t" title="${esc(v.label)}">${esc(v.label)}</span>${sub ? `<span class="a">${esc(sub)}</span>` : ""}${imgs ? `<span class="a m">${imgs}</span>` : ""}${PG && tmode() === "program" && PG.at[id] != null ? `<span class="a m" title="Starts at, and runs">at ${hmsOf(PG.at[id])} · ${hmsOf(filmSec(it))}</span>` : ""}</span></span><span class="lihead">${C.reorder ? `<span class="num">${n + 1}</span>` : "<span></span>"}<button data-rm="${esc(id)}" title="Remove">&times;</button></span></li>`; }).join("")
     : `<li class="empty">${esc(C.selEmpty || "Nothing picked yet. Open a row and tick what you want.")}</li>`;
   if (C.program) renderProg(PG);
 }
@@ -978,7 +1005,8 @@ $("sellist").addEventListener("click", e => {
     if (!filtered().some(i => i.id === openId)) { ON.clear(); OFF.clear(); $("q").value = ""; (C.toggles || []).forEach(t => $("tg-" + t.key).checked = false); }
     renderRows(); document.querySelector(`tr.row[data-id="${CSS.escape(openId)}"]`)?.scrollIntoView({ block: "start" }); }
 });
-["q", "sort"].forEach(id => $(id).addEventListener("input", renderRows));
+$("q").addEventListener("input", renderRows);
+$("sort").addEventListener("input", () => { if ($("sort").value !== "hs") delete UI.hsort; renderRows(); });   // the menu takes over from a clicked head
 (C.toggles || []).forEach(t => $("tg-" + t.key).addEventListener("input", renderRows));
 function buildOut() {
   const nt = id => ({ ...(NOTE[id] ? { notes: NOTE[id] } : {}), ...(IMRM[id] ? { remove_images: IMRM[id] } : {}), ...(IMUSE[id] && byId.get(id) ? { use_images: useList(byId.get(id)), ...(hasFilm(byId.get(id)) ? { film: useFilm(byId.get(id)) } : {}) } : {}) });
@@ -1056,7 +1084,7 @@ function rdDecide(d) {
 }
 function rdClose() { $("rd").hidden = true; document.body.classList.remove("rdon"); renderRows(); document.querySelector(`tr.row[data-id="${CSS.escape(openId || "")}"]`)?.scrollIntoView({ block: "center" }); }
 if (SERVED && C.source) {
-  $("filters").insertAdjacentHTML("beforeend", `<button class="linkish" id="rdopen" title="One work at a time: W / P / L to decide, J / K to step">Review one at a time <kbd style="font:11px var(--mono);color:var(--faint)">R</kbd></button>`);
+  $("filters").insertAdjacentHTML("beforeend", `<button class="linkish" id="rdopen" title="One work at a time: W / P / L to decide, J / K to step">Review one at a time <kbd style="font:var(--fs-s) var(--mono);color:var(--faint)">R</kbd></button>`);
   $("rdopen").addEventListener("click", rdOpen);
 }
 $("rdclose").addEventListener("click", rdClose);
@@ -1089,15 +1117,28 @@ const saveSeen = () => { try { localStorage.setItem(C.store + "-seen", JSON.stri
 const seenOnFile = it => !!(it.detail || {}).reviewed;
 C.items.forEach(it => { if (it.id in SEEN && SEEN[it.id] === seenOnFile(it)) delete SEEN[it.id]; }); saveSeen();
 function seenOf(it) { return it.id in SEEN ? SEEN[it.id] : seenOnFile(it); }
-if (C.reviewed) { $("filters").insertAdjacentHTML("beforeend", `<label><input type="checkbox" id="hideseen"${UI.hideseen ? " checked" : ""}> Hide reviewed</label>`);
-  $("hideseen").addEventListener("input", () => { UI.hideseen = $("hideseen").checked; saveUI(); renderRows(); }); }
+// The hides sit together in the rail, in this order, each with a key (2026-11-23, Brandon: "the hide boxes should all be in
+// sequence ... the hides should get shortcut keys too"): R reviewed (not on the Desk's pages, where R opens the review desk),
+// P picked, S seen. A key does what a click does.
+const HIDEKEYS = {};
+function hideBox(id, label, key, title, on) {
+  if (!$("hides")) $("filters").insertAdjacentHTML("beforeend", `<div class="hides" id="hides"></div>`);
+  const k = key && !(key === "R" && SERVED && C.source) ? key : "";
+  $("hides").insertAdjacentHTML("beforeend", `<label${title ? ` title="${esc(title)}"` : ""}><input type="checkbox" id="${id}"${UI[on] ? " checked" : ""}> ${esc(label)}${k ? `<kbd>${k}</kbd>` : ""}</label>`);
+  $(id).addEventListener("input", () => { UI[on] = $(id).checked; saveUI(); renderRows(); });
+  if (k) HIDEKEYS[k.toLowerCase()] = id; }
+document.addEventListener("keydown", e => { if (e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
+  const id = HIDEKEYS[(e.key || "").toLowerCase()]; if (!id || !$(id)) return;
+  if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (!$("rd").hidden || !$("lb").hidden || ($("vw") && !$("vw").hidden)) return;
+  e.preventDefault(); const c = $(id); c.checked = !c.checked; c.dispatchEvent(new Event("input")); toast(`${c.parentElement.textContent.replace(/[RPS]$/, "").trim()}: ${c.checked ? "on" : "off"}`); });
+if (C.reviewed) hideBox("hideseen", "Hide reviewed", "R", "", "hideseen");
 
 // "Hide picked" (2026-11-19, Brandon, picking through the Kadist archive a theme at a time: "i want to be able to hide already
 // selected"): a tick in the rail takes the rows already in the selection out of the table, so what is left is what has not
 // been chosen. Not on a page whose rows are decided W / P / L in the Desk (those have their own state).
 if (!(SERVED && C.source) && C.columns.some(c => c.key === "_want" || c.key === "_picked")) {
-  $("filters").insertAdjacentHTML("beforeend", `<label><input type="checkbox" id="hidepicked"${UI.hidepicked ? " checked" : ""}> Hide picked</label>`);
-  $("hidepicked").addEventListener("input", () => { UI.hidepicked = $("hidepicked").checked; saveUI(); renderRows(); }); }
+  hideBox("hidepicked", "Hide picked", "P", "Rows already in the selection leave the table", "hidepicked"); }
 
 // ---- the viewer (CONFIG.viewer: true; 2026-11-22) ----------------------------------------------------------------
 // Brandon, on the Kadist catalogue: "instead of the list could we do a larger view i can just sit and cycle through and get a
@@ -1150,10 +1191,9 @@ function vwClose() { $("vw").hidden = true; document.body.classList.remove("rdon
 // viewer's button and Enter open the work's watch link (detail.watch) in a new tab.
 if (C.browseOnly) document.body.classList.add("browse");
 if (C.viewer && !C.pickKids) {
-  $("filters").insertAdjacentHTML("beforeend", `<button class="linkish" id="vwopen" title="One work at a time, the picture large: arrows to move, Enter to ${C.browseOnly ? "watch" : "pick"}">View one at a time <kbd style="font:11px var(--mono);color:var(--faint)">V</kbd></button>`);
+  document.querySelector(".cathead label").insertAdjacentHTML("beforebegin", `<button class="linkish" id="vwopen" title="One work at a time, the picture large: arrows to move, Enter to ${C.browseOnly ? "watch" : "pick"}">View one at a time<kbd>V</kbd></button>`);
   $("vwopen").addEventListener("click", vwOpen);
-  $("filters").insertAdjacentHTML("beforeend", `<label title="Works the viewer has already shown you"><input type="checkbox" id="hideviewed"${UI.hideviewed ? " checked" : ""}> Hide seen</label>`);
-  $("hideviewed").addEventListener("input", () => { UI.hideviewed = $("hideviewed").checked; saveUI(); renderRows(); });
+  hideBox("hideviewed", "Hide seen", "S", "Works the viewer has already shown you", "hideviewed");
   $("vwclose").addEventListener("click", vwClose); $("vwprev").addEventListener("click", () => vwStep(-1)); $("vwnext").addEventListener("click", () => vwStep(1));
   $("vwpick").addEventListener("click", vwPick);
   document.addEventListener("keydown", e => {
@@ -1183,60 +1223,69 @@ function tallyText() { if (!C.tally) return ""; const ids = Object.keys(PICK); i
   return ` · ${ids.reduce((n, id) => n + unitsOf(id), 0) + (C.tally.extra || 0)} ${C.tally.unit}`; }
 
 // ---- the screening program (CONFIG.program = {api, cardSec}; added 2026-11-23) -----------------------------------------
-// The films of the running order, in order: a video row, or a work whose film is in use (its film ticked, or nothing ticked).
-// Their total, each one's start (after its intertitle, as PROGRAM.txt counts), a target to measure against, and Build program,
+// The tray works in one of two modes, switched at its right end (CONFIG.program on): Lecture (Save lecture, Build deck, Deck
+// notes) and Program, for a screening: the films of the running order, in order (a video row, or a work whose film is in use),
+// their total, each one's start (after its intertitle, as PROGRAM.txt counts), a target to measure against, and Build program,
 // which hands them to the key's make_program.py through the server (Screenings/<date> <name>/: playlist.m3u for VLC, the
 // intertitles). Opened as a file, Build program saves <date> <name>.program.json to Downloads for make_program.py instead.
+const tmode = () => C.program && UI.tmode === "program" ? "program" : "lecture";
 const progFilm = it => { const p = ((it && it.detail) || {}).play; return !!(p && p.src) && (!hasFilm(it) || !IMUSE[it.id] || useFilm(it)); };
 const filmSec = it => +((((it || {}).cols || {}).sec) || ((((it || {}).detail || {}).play || {}).sec) || 0);
-const cardSec = () => UI.pgcards ? (C.program.cardSec || 12) : 0;
+const cardSec = () => UI.pgcards ? ((C.program || {}).cardSec || 12) : 0;
 function progPlan() { const at = {}, films = []; let t = 0;
   Object.keys(PICK).forEach(id => { const it = byId.get(id); if (!progFilm(it)) return; t += cardSec(); at[id] = t; t += filmSec(it); films.push(it); });
   return { at, films, total: t, cards: cardSec() * films.length }; }
 const parseLen = v => { v = String(v || "").trim(); if (!v) return 0; const p = v.split(":").map(Number); if (p.some(isNaN)) return 0;
   return p.length === 1 ? p[0] * 60 : p.length === 2 ? p[0] * 3600 + p[1] * 60 : p[0] * 3600 + p[1] * 60 + p[2]; };   // "75" minutes, "1:15" h:mm
-let pgDone = null;     // {text, err, path}: the last build's result, kept in the tray until the next
-function renderProg(PG) { const box = $("tprog"); PG = PG || progPlan(); box.hidden = !PG.films.length && !pgDone; if (box.hidden) return;
-  const target = parseLen(UI.pgtarget), diff = target ? PG.total - target : 0;
+const DONE = { lecture: null, program: null };     // each mode's last result ({text, err, path}), kept in the tray until the next
+const doneHtml = d => d ? `<span class="pg-row">${d.path && LIVE ? `<button class="pgopen" data-path="${esc(d.path)}">Open folder</button>` : ""}</span><span class="pg-done${d.err ? " err" : ""}">${esc(d.text)}</span>` : "";
+function renderProg(PG) { const box = $("tprog"), m = tmode();
+  if (m === "lecture") { box.hidden = !DONE.lecture; box.innerHTML = doneHtml(DONE.lecture); return; }
+  PG = PG || progPlan(); box.hidden = false;
   const keep = document.activeElement && document.activeElement.id === "pgtarget";
-  const open = pgDone && pgDone.path && LIVE ? `<button id="pgopen" data-path="${esc(pgDone.path)}">Open folder</button>` : "";
-  const done = pgDone ? `<span class="pg-done${pgDone.err ? " err" : ""}">${esc(pgDone.text)}</span>` : "";
-  if (!PG.films.length) { box.innerHTML = `<span class="pg-row">${open}</span>${done}`; return; }
-  box.innerHTML = `<span class="label">Program</span>
-    <span><b>${PG.films.length} film${PG.films.length > 1 ? "s" : ""} · ${hmsOf(PG.total)}</b>${PG.cards ? ` <span title="intertitles included">(${hmsOf(PG.cards)} of intertitles)</span>` : ""}</span>
+  if (!PG.films.length) { box.innerHTML = `<span>No films in the running order yet: pick from the Video view.</span>${doneHtml(DONE.program)}`; return; }
+  const target = parseLen(UI.pgtarget), diff = target ? PG.total - target : 0;
+  box.innerHTML = `<span><b>${PG.films.length} film${PG.films.length > 1 ? "s" : ""} · ${hmsOf(PG.total)}</b>${PG.cards ? ` <span title="intertitles included">(${hmsOf(PG.cards)} of intertitles)</span>` : ""}</span>
     <span class="pg-row"><label title="A 12-second card naming each work before it plays"><input type="checkbox" id="pgcards"${UI.pgcards ? " checked" : ""}> Intertitles</label>
       <label title="The length you are aiming for: minutes (75) or hours:minutes (1:15)">Target <input type="text" id="pgtarget" value="${esc(UI.pgtarget || "")}" placeholder="1:15"></label>
       ${target ? `<span class="${diff > 0 ? "over" : "under"}">${diff > 0 ? hmsOf(diff) + " over" : diff < 0 ? hmsOf(-diff) + " to spare" : "on target"}</span>` : ""}</span>
-    <span class="pg-row"><button id="pgbuild" title="${LIVE ? "Build it on the key: Screenings/&lt;date&gt; &lt;name&gt;/, with playlist.m3u for VLC" : "Save the program to Downloads, for make_program.py on the key"}">Build program</button>${open}</span>
-    ${done}`;
+    <span class="pg-row"><button class="primary" id="pgbuild" title="${LIVE ? "Build it on the key: Screenings/&lt;date&gt; &lt;name&gt;/, with playlist.m3u for VLC" : "Save the program to Downloads, for make_program.py on the key"}">Build program</button></span>
+    ${doneHtml(DONE.program)}`;
   if (keep) { const i = $("pgtarget"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
 const progName = () => (C.nameField ? $("pname").value : "").trim(), progDate = () => (C.dateField && $("pdate").value) || (d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`)(new Date());   // the local date: toISOString's is UTC, tomorrow by the evening here
 async function progBuild() { const PG = progPlan(), name = progName();
-  if (!name) { pgDone = { text: `Name it first (the ${C.nameField ? C.nameField.label.toLowerCase() : "name"} box).`, err: true }; return renderProg(); }
+  if (!name) { DONE.program = { text: "Name it first (the name box).", err: true }; return renderProg(); }
   const prog = { title: name, date: progDate(), cards: !!UI.pgcards, note: "",
     items: PG.films.map(it => ({ file: it.detail.play.src, artist: it.cols.artist || "", title: it.cols.name || it.name, year: it.cols.year || "", sec: filmSec(it) })) };
   if (!LIVE) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(prog, null, 1)], { type: "application/json" }));
     a.download = `${prog.date} ${name}.program.json`; document.body.appendChild(a); a.click(); a.remove();
-    pgDone = { text: "Saved to Downloads. On the key run: py -3 _system\\make_program.py" }; return renderProg(); }
-  pgDone = { text: `Building${prog.cards ? " (each intertitle takes a few seconds)" : ""}...` }; renderProg();
+    DONE.program = { text: "Saved to Downloads. On the key run: py -3 _system\\make_program.py" }; return renderProg(); }
+  DONE.program = { text: `Building${prog.cards ? " (each intertitle takes a few seconds)" : ""}...` }; renderProg();
   const r = await postJ((C.program.api || "/program"), prog).catch(() => null);
-  pgDone = r && r.ok ? { text: `Built: ${r.path}${r.total ? " · " + r.total.replace(/^Total\s*/, "") : ""}. Open playlist.m3u in VLC.${r.warning ? " " + r.warning : ""}`, path: r.path }
+  DONE.program = r && r.ok ? { text: `Built: ${r.path}${r.total ? " · " + r.total.replace(/^Total\s*/, "") : ""}. Open playlist.m3u in VLC.${r.warning ? " " + r.warning : ""}`, path: r.path }
     : { text: (r && r.error) || "Not built: is the server running?", err: true };
   renderProg(); }
-if (C.program) {
+function setTmode(m) { UI.tmode = m; saveUI(); applyTmode(); renderSel(); }
+function applyTmode() { const m = tmode(); document.body.classList.toggle("tm-program", m === "program"); document.body.classList.toggle("tm-lecture", m === "lecture");
+  document.querySelectorAll("#tmode button").forEach(b => b.classList.toggle("on", b.dataset.tm === m));
+  $("seltitle").textContent = m === "program" ? "Program" : (C.selTitle || "Selection");
+  if (C.nameField) $("pname").placeholder = m === "program" ? "For example: ART 105 | Screening 4" : (C.nameField.hint || ""); }
+if (C.program) { $("tmode").hidden = false; $("tmlec").textContent = C.selTitle || "Lecture";
+  $("tmode").addEventListener("click", e => { const b = e.target.closest("[data-tm]"); if (b) setTmode(b.dataset.tm); });
   $("tprog").addEventListener("change", e => { if (e.target.id === "pgcards") { UI.pgcards = e.target.checked; saveUI(); renderSel(); } });
   $("tprog").addEventListener("input", e => { if (e.target.id === "pgtarget") { UI.pgtarget = e.target.value; saveUI(); renderProg(); } });
-}
+  applyTmode(); }
 $("tprog").addEventListener("click", e => { if (e.target.id === "pgbuild") progBuild();
-  if (e.target.id === "pgopen") postJ("/open", { kind: "folder", path: e.target.dataset.path }).then(r => { if (!r || !r.ok) toast((r && r.error) || "Not opened"); }).catch(() => toast("Not opened")); });
+  const o = e.target.closest(".pgopen"); if (o) postJ("/open", { kind: "folder", path: o.dataset.path }).then(r => { if (!r || !r.ok) toast((r && r.error) || "Not opened"); }).catch(() => toast("Not opened")); });
 // Build deck (CONFIG.deck = {api}; served only): saves the lecture, then the server builds its deck in the lecture's folder.
 if (C.deck && LIVE) { const b = $("deckbtn"); b.hidden = false; b.title = "Save the lecture, then build its slide deck in the lecture's folder";
   b.addEventListener("click", async () => { if (C.nameField && !progName()) return toast("Name the lecture first");
     b.disabled = true; b.textContent = "Building deck...";
-    const s = await postJ("/save", { raw: liveRaw(), entries: buildOut() }).catch(() => null);
-    const r = s && s.ok ? await postJ((C.deck.api || "/deck"), { folder: s.folder }).catch(() => null) : s;
+    const sv = await postJ("/save", { raw: liveRaw(), entries: buildOut() }).catch(() => null);
+    const r = sv && sv.ok ? await postJ((C.deck.api || "/deck"), { folder: sv.folder }).catch(() => null) : sv;
     b.disabled = false; b.textContent = "Build deck";
-    pgDone = r && r.ok ? { text: `Deck built: ${r.path}/${r.deck}${r.warning ? ". " + r.warning : ""}`, path: r.path, err: !!r.warning } : { text: (r && r.error) || "Deck not built: is the server running?", err: true };
+    DONE.lecture = r && r.ok ? { text: `Deck built: ${r.path}/${r.deck}${r.warning ? ". " + r.warning : ""}`, path: r.path, err: !!r.warning }
+      : { text: (r && r.error) || "Deck not built: is the server running?", err: true };
     renderProg(); }); }
 
 // ---- image preview ----
